@@ -75,7 +75,7 @@ public class IdentityService {
         return identityRepository.findAllNormalised();
     }
 
-    public List<IdentityDto> getIdentitiesByUidsNormalised(List<String> uids) {
+    public List<IdentityDto> getIdentitiesByUidsNormalised(Collection<String> uids) {
         return identityRepository.findIdentitiesByUidsNormalised(uids);
     }
 
