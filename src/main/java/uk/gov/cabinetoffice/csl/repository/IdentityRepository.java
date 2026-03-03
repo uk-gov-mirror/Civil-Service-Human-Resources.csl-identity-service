@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import uk.gov.cabinetoffice.csl.domain.Identity;
 import uk.gov.cabinetoffice.csl.dto.IdentityDto;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +34,7 @@ public interface IdentityRepository extends JpaRepository<Identity, Long> {
 
         @Query("select new uk.gov.cabinetoffice.csl.dto.IdentityDto(i)" +
                 " from Identity i where i.uid in (?1)")
-        List<IdentityDto> findIdentitiesByUidsNormalised(List<String> uids);
+        List<IdentityDto> findIdentitiesByUidsNormalised(Collection<String> uids);
 
         Long countByAgencyTokenUid(String uid);
 
