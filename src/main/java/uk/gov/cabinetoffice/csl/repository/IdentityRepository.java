@@ -43,4 +43,8 @@ public interface IdentityRepository extends JpaRepository<Identity, Long> {
         @Query("UPDATE Identity SET agencyTokenUid = null WHERE agencyTokenUid IS NOT NULL" +
                 " AND agencyTokenUid = :agencyTokenUid")
         void removeAgencyToken(String agencyTokenUid);
+
+        @Query("select new uk.gov.cabinetoffice.csl.dto.IdentityDto(i)" +
+                " from Identity i where (?1 is null or i.uid in (?1)) and (?2 is null or i.email in (?2))")
+        List<IdentityDto> findIdentitiesByUidsAndEmailsNormalised(Collection<String> uids, Collection<String> emails);
 }

@@ -1,11 +1,11 @@
 package uk.gov.cabinetoffice.csl.dto;
 
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import uk.gov.cabinetoffice.csl.validation.annotation.UidMapRequestUidsAndEmails;
 
 import java.util.Collection;
 
@@ -13,10 +13,13 @@ import java.util.Collection;
 @AllArgsConstructor
 @Getter
 @Setter
-public class UidRequest {
+@UidMapRequestUidsAndEmails
+public class UidMapRequest {
 
-    @Size(min=1, max=400)
-    @NotNull
+    @Size(max=1000)
     private Collection<String> uids;
+
+    @Size(max=1000)
+    private Collection<String> emails;
 
 }

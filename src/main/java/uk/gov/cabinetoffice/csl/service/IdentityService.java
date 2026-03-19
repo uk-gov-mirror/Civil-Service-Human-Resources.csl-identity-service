@@ -10,6 +10,7 @@ import uk.gov.cabinetoffice.csl.domain.*;
 import uk.gov.cabinetoffice.csl.dto.AgencyToken;
 import uk.gov.cabinetoffice.csl.dto.BatchProcessResponse;
 import uk.gov.cabinetoffice.csl.dto.IdentityDto;
+import uk.gov.cabinetoffice.csl.dto.UidMapRequest;
 import uk.gov.cabinetoffice.csl.exception.IdentityNotFoundException;
 import uk.gov.cabinetoffice.csl.exception.NotEnoughSpaceAvailableException;
 import uk.gov.cabinetoffice.csl.exception.ResourceNotFoundException;
@@ -77,6 +78,10 @@ public class IdentityService {
 
     public List<IdentityDto> getIdentitiesByUidsNormalised(Collection<String> uids) {
         return identityRepository.findIdentitiesByUidsNormalised(uids);
+    }
+
+    public List<IdentityDto> getIdentitiesByUidsAndEmailsNormalised(UidMapRequest body) {
+        return identityRepository.findIdentitiesByUidsAndEmailsNormalised(body.getUids(), body.getEmails());
     }
 
     @Transactional(noRollbackFor = {UnableToAllocateAgencyTokenException.class, ResourceNotFoundException.class})
@@ -210,4 +215,5 @@ public class IdentityService {
         csrsService.removeOrganisationalUnitFromCivilServant(identity.getUid());
         return identity;
     }
+
 }

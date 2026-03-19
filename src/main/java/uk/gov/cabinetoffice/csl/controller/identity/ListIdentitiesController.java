@@ -54,9 +54,9 @@ public class ListIdentitiesController {
     }
 
     @PostMapping("/api/identities/map-uids-to-emails")
-    public ResponseEntity<Map<String, String>> mapUidsToEmails(@RequestBody UidRequest uids) {
+    public ResponseEntity<Map<String, String>> mapUidsToEmails(@RequestBody UidMapRequest body) {
         return ok(
-                identityService.getIdentitiesByUidsNormalised(uids.getUids())
+                identityService.getIdentitiesByUidsAndEmailsNormalised(body)
                         .stream()
                         .collect(toMap(IdentityDto::getUid, IdentityDto::getUsername)));
     }
