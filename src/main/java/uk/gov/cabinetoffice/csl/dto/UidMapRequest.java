@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import uk.gov.cabinetoffice.csl.validation.annotation.UidMapRequestUidsAndEmails;
 
-import java.util.Collection;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,10 +16,10 @@ import java.util.Collection;
 @UidMapRequestUidsAndEmails
 public class UidMapRequest {
 
-    @Size(max=1000)
-    private Collection<String> uids;
+    @Size(max = 1000)
+    private List<String> uids;
 
-    @Size(max=1000)
-    private Collection<String> emails;
+    @Size(max = 1000)
+    private List<String> emails;
 
 }
