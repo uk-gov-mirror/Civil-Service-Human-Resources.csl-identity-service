@@ -3,8 +3,8 @@ package uk.gov.cabinetoffice.csl.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
-
 import uk.gov.cabinetoffice.csl.exception.NotificationException;
+import uk.gov.cabinetoffice.csl.util.Utils;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
@@ -21,10 +21,13 @@ public class NotifyServiceTest {
 
     private NotifyService notifyService;
 
+    private Utils utils;
+
     @BeforeEach
     public void setUp() {
+        utils = mock(Utils.class);
         notificationClient = mock(NotificationClient.class);
-        notifyService = new NotifyServiceImpl(notificationClient);
+        notifyService = new NotifyServiceImpl(notificationClient, utils);
         ReflectionTestUtils.setField(notifyService, "notificationClient", notificationClient);
     }
 

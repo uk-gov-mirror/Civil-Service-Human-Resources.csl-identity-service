@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.cabinetoffice.csl.exception.NotificationException;
+import uk.gov.cabinetoffice.csl.util.Utils;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
@@ -19,24 +20,36 @@ public class NotifyServiceImpl implements NotifyService {
 
     private static final String EMAIL_PERMISSION = "email";
     private static final String ACTIVATION_URL_PERMISSION = "activationUrl";
+    private static final String VALIDITY_IN_SECONDS = "validityInSeconds";
 
     private final NotificationClient notificationClient;
+    private final Utils utils;
 
-    public NotifyServiceImpl(NotificationClient notificationClient) {
+    public NotifyServiceImpl(NotificationClient notificationClient, Utils utils) {
         this.notificationClient = notificationClient;
+        this.utils = utils;
     }
 
-    @Override
-    public void notify(String email, String code, String templateId, String actionUrl) throws NotificationClientException {
-        String activationUrl = String.format(actionUrl, code);
-
+    private Map<String, String> getGenericPersonalisation(String email, String activationUrl) {
         HashMap<String, String> personalisation = new HashMap<>();
         personalisation.put(EMAIL_PERMISSION, email);
         personalisation.put(ACTIVATION_URL_PERMISSION, activationUrl);
+        return personalisation;
+    }
 
-        SendEmailResponse response = notificationClient.sendEmail(templateId, email, personalisation, "");
+    @Override
+    public void notify(String email, String code, String templateId, String actionUrl, long validityInSeconds) throws NotificationException {
+        String activationUrl = String.format(actionUrl, code);
+        Map<String, String> personalisation = getGenericPersonalisation(email, activationUrl);
+        personalisation.put(VALIDITY_IN_SECONDS, utils.convertSecondsIntoDaysHoursMinutesSeconds(validityInSeconds));
+        notifyWithPersonalisation(email, templateId, personalisation);
+    }
 
-        log.info("Notify email sent to: {}", response.getBody());
+    @Override
+    public void notify(String email, String code, String templateId, String actionUrl) throws NotificationException {
+        String activationUrl = String.format(actionUrl, code);
+        Map<String, String> personalisation = getGenericPersonalisation(email, activationUrl);
+        notifyWithPersonalisation(email, templateId, personalisation);
     }
 
     @Override

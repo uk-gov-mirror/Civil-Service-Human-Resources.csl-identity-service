@@ -14,7 +14,6 @@ import uk.gov.cabinetoffice.csl.domain.Reset;
 import uk.gov.cabinetoffice.csl.service.IdentityService;
 import uk.gov.cabinetoffice.csl.service.PasswordService;
 import uk.gov.cabinetoffice.csl.service.ResetService;
-import uk.gov.service.notify.NotificationClientException;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -73,8 +72,7 @@ public class ResetController {
     }
 
     @PostMapping
-    public String requestReset(@RequestParam(value = "email") String email, Model model)
-            throws NotificationClientException {
+    public String requestReset(@RequestParam(value = "email") String email, Model model) {
         log.info("Reset request received for email {}", email);
         model.addAttribute("resetEmailId", email);
         model.addAttribute(CONTACT_EMAIL_ATTRIBUTE, contactEmail);
@@ -86,7 +84,7 @@ public class ResetController {
         }
 
         Reset pendingReset = resetService.getPendingResetForEmail(email);
-        if(pendingReset == null) {
+        if (pendingReset == null) {
             resetService.createPendingResetRequestAndAndNotifyUser(email);
             log.info("A new pending reset is created and reset request email sent to {}", email);
         } else {
@@ -111,7 +109,7 @@ public class ResetController {
         Reset reset = resetService.getResetForCode(code);
         String checkResetValidityResult = checkResetValidity(reset, code, model);
 
-        if(StringUtils.isBlank(checkResetValidityResult)) {
+        if (StringUtils.isBlank(checkResetValidityResult)) {
             ResetForm resetForm = new ResetForm();
             resetForm.setCode(code);
             model.addAttribute("resetForm", resetForm);
@@ -124,8 +122,7 @@ public class ResetController {
     @PostMapping("/{code}")
     public String resetPassword(@PathVariable(value = "code") String code,
                                 @ModelAttribute @Valid ResetForm resetForm,
-                                BindingResult bindingResult, Model model)
-            throws NotificationClientException {
+                                BindingResult bindingResult, Model model) {
         log.debug("User on enter password screen for reset code {}", code);
 
         if (bindingResult.hasErrors()) {
@@ -136,7 +133,7 @@ public class ResetController {
         Reset reset = resetService.getResetForCode(code);
         String result = checkResetValidity(reset, code, model);
 
-        if(StringUtils.isBlank(result)) {
+        if (StringUtils.isBlank(result)) {
             Identity identity = identityService.getIdentityForEmail(reset.getEmail());
 
             if (identity == null || identity.getEmail() == null) {

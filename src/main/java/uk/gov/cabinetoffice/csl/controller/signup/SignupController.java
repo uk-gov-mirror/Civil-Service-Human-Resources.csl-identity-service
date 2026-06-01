@@ -9,17 +9,16 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import uk.gov.cabinetoffice.csl.service.CsrsService;
-import uk.gov.cabinetoffice.csl.service.IdentityService;
 import uk.gov.cabinetoffice.csl.domain.Invite;
-import uk.gov.cabinetoffice.csl.dto.OrganisationalUnit;
 import uk.gov.cabinetoffice.csl.dto.AgencyToken;
+import uk.gov.cabinetoffice.csl.dto.OrganisationalUnit;
 import uk.gov.cabinetoffice.csl.exception.ResourceNotFoundException;
 import uk.gov.cabinetoffice.csl.exception.UnableToAllocateAgencyTokenException;
 import uk.gov.cabinetoffice.csl.service.AgencyTokenCapacityService;
+import uk.gov.cabinetoffice.csl.service.CsrsService;
+import uk.gov.cabinetoffice.csl.service.IdentityService;
 import uk.gov.cabinetoffice.csl.service.InviteService;
 import uk.gov.cabinetoffice.csl.util.Utils;
-import uk.gov.service.notify.NotificationClientException;
 
 import java.time.Clock;
 import java.util.List;
@@ -112,7 +111,7 @@ public class SignupController {
     public String sendInvite(Model model,
                              @ModelAttribute @Valid RequestInviteForm form,
                              BindingResult bindingResult,
-                             RedirectAttributes redirectAttributes) throws NotificationClientException {
+                             RedirectAttributes redirectAttributes) {
 
         model.addAttribute(CONTACT_EMAIL_ATTRIBUTE, contactEmail);
         model.addAttribute(CONTACT_NUMBER_ATTRIBUTE, contactNumber);
@@ -126,7 +125,7 @@ public class SignupController {
         log.info("Registration request received for {}", email);
         Optional<Invite> pendingInvite = inviteService.getInviteForEmailAndStatus(email, PENDING);
 
-        if(pendingInvite.isPresent()) {
+        if (pendingInvite.isPresent()) {
             Invite invite = pendingInvite.get();
             long durationInSecondsSinceInvited = SECONDS.between(invite.getInvitedAt(), now(clock));
             if (durationInSecondsSinceInvited < durationAfterReRegAllowedInSeconds) {
@@ -392,7 +391,7 @@ public class SignupController {
         Optional<AgencyToken> agencyTokenOptional = csrsService.getAgencyToken(
                 domain, form.getToken(), orgCode);
 
-        if(agencyTokenOptional.isEmpty()) {
+        if (agencyTokenOptional.isEmpty()) {
             log.info("Token form has failed the validation for domain {}, token {} and organisation {}.",
                     domain, form.getToken(), orgCode);
             redirectAttributes.addFlashAttribute(STATUS_ATTRIBUTE, ENTER_TOKEN_ERROR_MESSAGE);
@@ -414,7 +413,7 @@ public class SignupController {
                 domain, form.getToken(), orgCode));
         log.info("Token form has passed the validation for domain {}, token {} and organisation {}.",
                 domain, form.getToken(), orgCode);
-        return REDIRECT_SIGNUP + code  + "?" + SKIP_MAINTENANCE_PAGE_PARAM_NAME + "=" + invite.getForEmail();
+        return REDIRECT_SIGNUP + code + "?" + SKIP_MAINTENANCE_PAGE_PARAM_NAME + "=" + invite.getForEmail();
     }
 
     private AgencyToken agencyTokenInfo(String domain, String token, String org) {

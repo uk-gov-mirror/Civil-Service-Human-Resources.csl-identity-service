@@ -6,17 +6,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.cabinetoffice.csl.domain.Identity;
 import uk.gov.cabinetoffice.csl.domain.Invite;
 import uk.gov.cabinetoffice.csl.domain.InviteStatus;
-import uk.gov.cabinetoffice.csl.domain.Role;
 import uk.gov.cabinetoffice.csl.factory.InviteFactory;
 import uk.gov.cabinetoffice.csl.repository.InviteRepository;
-import uk.gov.service.notify.NotificationClientException;
 
 import java.time.Clock;
 import java.util.Optional;
-import java.util.Set;
 
 import static java.time.LocalDateTime.now;
 import static java.time.temporal.ChronoUnit.SECONDS;
@@ -53,22 +49,11 @@ public class InviteService {
         this.clock = clock;
     }
 
-    public void createNewInviteForEmailAndRoles(String email, Set<Role> roleSet, Identity inviter)
-            throws NotificationClientException {
-        Invite invite = inviteFactory.create(email, roleSet, inviter);
-        inviteRepository.save(invite);
-        notifyService.notify(invite.getForEmail(), invite.getCode(), govNotifyInviteTemplateId, signupUrlFormat);
-    }
-
-    public void sendSelfSignupInvite(String email, boolean isAuthorisedInvite) throws NotificationClientException {
+    public void sendSelfSignupInvite(String email, boolean isAuthorisedInvite) {
         Invite invite = inviteFactory.createSelfSignUpInvite(email);
         invite.setAuthorisedInvite(isAuthorisedInvite);
         inviteRepository.save(invite);
-        notifyService.notify(invite.getForEmail(), invite.getCode(), govNotifyInviteTemplateId, signupUrlFormat);
-    }
-
-    public Invite saveInvite(Invite invite) {
-        return inviteRepository.save(invite);
+        notifyService.notify(invite.getForEmail(), invite.getCode(), govNotifyInviteTemplateId, signupUrlFormat, validityInSeconds);
     }
 
     public void authoriseAndSaveInvite(Invite invite) {
@@ -79,7 +64,7 @@ public class InviteService {
     public void updateInviteStatus(String code, InviteStatus newStatus) {
         Invite invite = inviteRepository.findByCode(code);
         invite.setStatus(newStatus);
-        if(InviteStatus.ACCEPTED.equals(newStatus)) {
+        if (InviteStatus.ACCEPTED.equals(newStatus)) {
             invite.setAcceptedAt(now(clock));
         }
         inviteRepository.save(invite);
@@ -98,18 +83,13 @@ public class InviteService {
     }
 
     @ReadOnlyProperty
-    public Invite getInviteForEmail(String email) {
-        return inviteRepository.findByForEmailIgnoreCase(email);
-    }
-
-    @ReadOnlyProperty
     public Optional<Invite> getInviteForEmailAndStatus(String email, InviteStatus status) {
         return inviteRepository.findByForEmailIgnoreCaseAndStatus(email, status);
     }
 
     public boolean isInviteCodeExpired(String code) {
         Invite invite = inviteRepository.findByCode(code);
-        if(invite == null) {
+        if (invite == null) {
             log.info("Invite not found for code: {}", code);
             return true;
         }
@@ -128,7 +108,7 @@ public class InviteService {
 
     public boolean isInviteCodeUsed(String code) {
         Invite invite = inviteRepository.findByCode(code);
-        if(invite != null) {
+        if (invite != null) {
             return invite.getStatus().equals(ACCEPTED);
         }
         return false;

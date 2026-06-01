@@ -7,7 +7,6 @@ import uk.gov.cabinetoffice.csl.domain.Invite;
 import uk.gov.cabinetoffice.csl.domain.InviteStatus;
 import uk.gov.cabinetoffice.csl.factory.InviteFactory;
 import uk.gov.cabinetoffice.csl.repository.InviteRepository;
-import uk.gov.service.notify.NotificationClientException;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -85,7 +84,7 @@ public class InviteServiceTest {
     }
 
     @Test
-    public void shouldSendAndSaveSelfSignupInvite() throws NotificationClientException {
+    public void shouldSendAndSaveSelfSignupInvite() {
         String email = "use@domain.org";
         String code = "invite-code";
 
@@ -96,7 +95,7 @@ public class InviteServiceTest {
 
         inviteService.sendSelfSignupInvite(email, true);
 
-        verify(notifyService).notify(email, code, govNotifyTemplateId, signupUrlFormat);
+        verify(notifyService).notify(email, code, govNotifyTemplateId, signupUrlFormat, 259200L);
         verify(inviteRepository).save(invite);
     }
 

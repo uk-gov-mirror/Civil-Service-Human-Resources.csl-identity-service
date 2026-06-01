@@ -2,7 +2,6 @@ package uk.gov.cabinetoffice.csl.controller.emailupdate;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,7 +12,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.cabinetoffice.csl.domain.EmailUpdate;
 import uk.gov.cabinetoffice.csl.domain.EmailUpdateStatus;
 import uk.gov.cabinetoffice.csl.domain.Identity;
-import uk.gov.cabinetoffice.csl.service.*;
+import uk.gov.cabinetoffice.csl.service.EmailUpdateService;
+import uk.gov.cabinetoffice.csl.service.FrontendService;
+import uk.gov.cabinetoffice.csl.service.IdentityService;
 
 import java.time.ZoneId;
 
@@ -26,7 +27,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.gov.cabinetoffice.csl.domain.EmailUpdateStatus.PENDING;
 import static uk.gov.cabinetoffice.csl.domain.EmailUpdateStatus.UPDATED;
-import static uk.gov.cabinetoffice.csl.util.ApplicationConstants.*;
+import static uk.gov.cabinetoffice.csl.util.ApplicationConstants.CHANGE_EMAIL_ERROR_MESSAGE;
+import static uk.gov.cabinetoffice.csl.util.ApplicationConstants.STATUS_ATTRIBUTE;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -115,7 +117,7 @@ public class EmailUpdateCompletionWhileNotLoggedInEmailUpdateControllerTest {
         when(emailUpdateService.isEmailUpdateExpired(emailUpdate)).thenReturn(true);
 
         mockMvc.perform(get(VERIFY_EMAIL_PATH + VERIFY_CODE)
-                    .with(csrf())
+                        .with(csrf())
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/account/email/update/error?codeExpired=true"))
@@ -137,7 +139,7 @@ public class EmailUpdateCompletionWhileNotLoggedInEmailUpdateControllerTest {
         doNothing().when(emailUpdateService).updateEmailAddress(eq(emailUpdate));
 
         mockMvc.perform(get(VERIFY_EMAIL_PATH + VERIFY_CODE)
-                    .with(csrf())
+                        .with(csrf())
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/account/email/updated"))
@@ -160,7 +162,7 @@ public class EmailUpdateCompletionWhileNotLoggedInEmailUpdateControllerTest {
         doNothing().when(emailUpdateService).updateEmailAddress(eq(emailUpdate));
 
         mockMvc.perform(get(VERIFY_EMAIL_PATH + VERIFY_CODE)
-                    .with(csrf())
+                        .with(csrf())
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute("email", NEW_EMAIL))
@@ -181,7 +183,7 @@ public class EmailUpdateCompletionWhileNotLoggedInEmailUpdateControllerTest {
         when(identityService.isDomainInAnAgencyToken(DOMAIN)).thenReturn(false);
 
         mockMvc.perform(get(VERIFY_EMAIL_PATH + VERIFY_CODE)
-                    .with(csrf())
+                        .with(csrf())
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/account/email/update/error?invalidEmail=true"))
@@ -203,7 +205,7 @@ public class EmailUpdateCompletionWhileNotLoggedInEmailUpdateControllerTest {
         doThrow(new RuntimeException()).when(emailUpdateService).updateEmailAddress(any(EmailUpdate.class));
 
         mockMvc.perform(get(VERIFY_EMAIL_PATH + VERIFY_CODE)
-                    .with(csrf())
+                        .with(csrf())
                 )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(flash().attribute(STATUS_ATTRIBUTE, CHANGE_EMAIL_ERROR_MESSAGE))
@@ -216,7 +218,7 @@ public class EmailUpdateCompletionWhileNotLoggedInEmailUpdateControllerTest {
     @Test
     public void givenASuccessfulUpdateOfEmailAddress_whenEmailUpdated_shouldRedirectToEmailUpdatedView() throws Exception {
         mockMvc.perform(get("/account/email/updated")
-                    .with(csrf())
+                        .with(csrf())
                 )
                 .andExpect(status().isOk())
                 .andExpect(view().name(EMAIL_UPDATED_TEMPLATE));
