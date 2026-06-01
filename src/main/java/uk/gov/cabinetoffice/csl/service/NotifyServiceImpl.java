@@ -20,7 +20,7 @@ public class NotifyServiceImpl implements NotifyService {
 
     private static final String EMAIL_PERMISSION = "email";
     private static final String ACTIVATION_URL_PERMISSION = "activationUrl";
-    private static final String VALIDITY_IN_SECONDS = "validityInSeconds";
+    private static final String VALIDITY_IN_SECONDS = "linkValidity";
 
     private final NotificationClient notificationClient;
     private final Utils utils;
