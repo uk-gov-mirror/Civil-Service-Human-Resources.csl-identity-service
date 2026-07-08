@@ -7,6 +7,10 @@
   clear: both;
 }
 
+.phase-banner-container{
+  background-color: #ddd;
+}
+
 .grid-row:after,
 .content:after,
 .container:after,
@@ -55,17 +59,20 @@ fieldset:after,
 
 .content,
 .container,
-#global-header-bar,
 #global-cookie-message p,
 #footer .footer-wrapper,
 .phase-banner {
   max-width: 960px;
   margin: 0 15px;
 }
+
+#global-header-bar{
+  max-width: 100%;
+}
+
 @media (min-width: 641px) {
   .content,
   .container,
-  #global-header-bar,
   #global-cookie-message p,
   #footer .footer-wrapper,
   .phase-banner {
@@ -75,7 +82,6 @@ fieldset:after,
 @media (min-width: 1020px) {
   .content,
   .container,
-  #global-header-bar,
   #global-cookie-message p,
   #footer .footer-wrapper,
   .phase-banner {
@@ -158,7 +164,6 @@ fieldset:after,
 
 .content,
 .container,
-#global-header-bar,
 #global-cookie-message p,
 #footer .footer-wrapper,
 .phase-banner {
@@ -168,7 +173,6 @@ fieldset:after,
 @media (min-width: 641px) {
   .content,
   .container,
-  #global-header-bar,
   #global-cookie-message p,
   #footer .footer-wrapper,
   .phase-banner {
@@ -178,7 +182,6 @@ fieldset:after,
 @media (min-width: 1020px) {
   .content,
   .container,
-  #global-header-bar,
   #global-cookie-message p,
   #footer .footer-wrapper,
   .phase-banner {
@@ -2319,7 +2322,6 @@ only screen and (min-resolution: 2dppx) {
 
 .phase-banner {
   padding: 10px 0 8px;
-  border-bottom: 1px solid #bfc1c3;
 }
 @media (min-width: 641px) {
   .phase-banner {
@@ -3608,6 +3610,7 @@ hr.clear {
 #global-header {
   background-color: #0b0c0c;
   width: 100%;
+  padding: 5px 0;
 }
 #global-header .header-wrapper {
   background-color: #0b0c0c;
@@ -3641,6 +3644,24 @@ hr.clear {
 #global-header .header-wrapper .header-global .header-logo {
   margin-top: 4px;
 }
+
+#global-header .header-wrapper .header-global .header-logo .logo-wrapper{
+  display: flex;
+  align-items: center;
+}
+
+#global-header .header-wrapper .header-global .header-logo .element-wrapper .logo-wrapper .gov-uk-name{
+  margin-left: 10px;
+}
+
+#global-header .header-wrapper .header-global .header-logo .element-wrapper .service-name{
+  width: 300px;
+  font-size: 24px;
+  font-weight: 100;
+  margin-top: 15px;
+  font-weight: bold;
+}
+
 @media (min-width: 769px) {
   #global-header.with-proposition .header-wrapper .header-global {
     float: left;
@@ -3649,6 +3670,16 @@ hr.clear {
   #global-header.with-proposition .header-wrapper .header-global .header-logo,
   #global-header.with-proposition .header-wrapper .header-global .site-search {
     width: 100%;
+  }
+
+  #global-header .header-wrapper .header-global .header-logo .element-wrapper {
+    display: flex;
+    align-items: center;
+  }
+
+  #global-header .header-wrapper .header-global .header-logo .element-wrapper .service-name{
+    margin-top: 0;
+    margin-left: 10px;
   }
 }
 @media (min-width: 769px) {
@@ -3882,7 +3913,7 @@ hr.clear {
 }
 
 .govuk-header__logotype-crown {
-  display: inline-block;
+  display: block;
   position: relative;
   top: -4px;
   margin-right: 2px;
