@@ -8,7 +8,7 @@
 }
 
 .phase-banner-container{
-  background-color: #ddd;
+  background-color: #e7e7e7;
 }
 
 .grid-row:after,
@@ -3638,9 +3638,7 @@ hr.clear {
     float: none;
   }
 }
-#global-header .header-wrapper .header-global .header-logo .content {
-  margin: 0 15px;
-}
+
 #global-header .header-wrapper .header-global .header-logo {
   margin-top: 4px;
 }
@@ -3651,7 +3649,7 @@ hr.clear {
 }
 
 #global-header .header-wrapper .header-global .header-logo .element-wrapper .logo-wrapper .gov-uk-name{
-  margin-left: 10px;
+  margin-left: 5px;
 }
 
 #global-header .header-wrapper .header-global .header-logo .element-wrapper .service-name{
@@ -3679,7 +3677,7 @@ hr.clear {
 
   #global-header .header-wrapper .header-global .header-logo .element-wrapper .service-name{
     margin-top: 0;
-    margin-left: 10px;
+    margin-left: 5px;
   }
 }
 @media (min-width: 769px) {
@@ -3688,9 +3686,7 @@ hr.clear {
     float: left;
   }
 }
-#global-header.with-proposition .header-wrapper .header-proposition .content {
-  margin: 0 15px;
-}
+
 #global-header #logo {
   float: left;
   overflow: visible;
