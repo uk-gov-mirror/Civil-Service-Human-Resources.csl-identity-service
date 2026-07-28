@@ -3951,7 +3951,7 @@ hr.clear {
 
 #footer {
   background-color: #dee0e2;
-  border-top: 10px solid #af292e;
+  border-top: 10px solid #002d24;
   position: absolute;
   left: 0;
   right: 0;
@@ -3961,11 +3961,7 @@ hr.clear {
   background-color: #dee0e2;
   padding-top: 20px;
 }
-@media (min-width: 641px) {
-  #footer .footer-wrapper {
-    padding-top: 60px;
-  }
-}
+
 #footer a {
   color: #454a4c;
 }
