@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.cabinetoffice.csl.domain.Reset;
 import uk.gov.cabinetoffice.csl.repository.ResetRepository;
-import uk.gov.service.notify.NotificationClientException;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -55,13 +54,13 @@ public class ResetService {
     }
 
     public boolean isResetExpired(Reset reset) {
-        if(reset.getResetStatus().equals(EXPIRED) || isResetComplete(reset)) {
+        if (reset.getResetStatus().equals(EXPIRED) || isResetComplete(reset)) {
             return true;
         }
 
-        if(reset.getResetStatus().equals(PENDING)) {
+        if (reset.getResetStatus().equals(PENDING)) {
             long diffInMs = MILLIS.between(reset.getRequestedAt(), LocalDateTime.now(clock));
-            if(diffInMs > validityInSeconds * 1000L) {
+            if (diffInMs > validityInSeconds * 1000L) {
                 reset.setResetStatus(EXPIRED);
                 resetRepository.save(reset);
                 return true;
@@ -79,34 +78,34 @@ public class ResetService {
         List<Reset> existingPendingResets =
                 resetRepository.findByEmailIgnoreCaseAndResetStatus(email, PENDING);
 
-        if(existingPendingResets != null && existingPendingResets.size() > 1) {
+        if (existingPendingResets != null && existingPendingResets.size() > 1) {
             existingPendingResets.forEach(r -> r.setResetStatus(EXPIRED));
             resetRepository.saveAll(existingPendingResets);
             return null;
         }
 
-        if(existingPendingResets != null && existingPendingResets.size() == 1) {
+        if (existingPendingResets != null && existingPendingResets.size() == 1) {
             reset = existingPendingResets.get(0);
-            if(isResetExpired(reset)) {
+            if (isResetExpired(reset)) {
                 return null;
             }
         }
         return reset;
     }
 
-    public void createPendingResetRequestAndAndNotifyUser(String email) throws NotificationClientException {
+    public void createPendingResetRequestAndAndNotifyUser(String email) {
         Reset reset = new Reset(random(40, true, true), email, PENDING, now(clock));
         resetRepository.save(reset);
-        notifyService.notify(reset.getEmail(), reset.getCode(), govNotifyResetTemplateId, resetUrlFormat);
+        notifyService.notify(reset.getEmail(), reset.getCode(), govNotifyResetTemplateId, resetUrlFormat, validityInSeconds);
     }
 
-    public void updatePendingResetRequestAndAndNotifyUser(Reset pendingReset) throws NotificationClientException {
+    public void updatePendingResetRequestAndAndNotifyUser(Reset pendingReset) {
         pendingReset.setRequestedAt(now(clock));
         resetRepository.save(pendingReset);
         notifyService.notify(pendingReset.getEmail(), pendingReset.getCode(), govNotifyResetTemplateId, resetUrlFormat);
     }
 
-    public void notifyUserForSuccessfulReset(Reset reset) throws NotificationClientException {
+    public void notifyUserForSuccessfulReset(Reset reset) {
         reset.setResetAt(now(clock));
         reset.setResetStatus(RESET);
         resetRepository.save(reset);

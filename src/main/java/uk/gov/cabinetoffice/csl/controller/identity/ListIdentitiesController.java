@@ -7,10 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.cabinetoffice.csl.domain.Identity;
-import uk.gov.cabinetoffice.csl.dto.BatchProcessResponse;
-import uk.gov.cabinetoffice.csl.dto.IdentityAgencyToken;
-import uk.gov.cabinetoffice.csl.dto.IdentityDto;
-import uk.gov.cabinetoffice.csl.dto.UidList;
+import uk.gov.cabinetoffice.csl.dto.*;
 import uk.gov.cabinetoffice.csl.exception.IdentityNotFoundException;
 import uk.gov.cabinetoffice.csl.service.IdentityService;
 
@@ -55,6 +52,15 @@ public class ListIdentitiesController {
                 .collect(toMap(IdentityDto::getUid, o -> o))
         );
     }
+
+    @PostMapping("/api/identities/map-uids-to-emails")
+    public ResponseEntity<Map<String, String>> mapUidsToEmails(@RequestBody UidRequest uids) {
+        return ok(
+                identityService.getIdentitiesByUidsNormalised(uids.getUids())
+                        .stream()
+                        .collect(toMap(IdentityDto::getUid, IdentityDto::getUsername)));
+    }
+
 
     @GetMapping(value ="/api/identities/map-for-uids", params = "uids")
     public ResponseEntity<Map<String, IdentityDto>> listIdentitiesAsMapForUids(@RequestParam List<String> uids) {

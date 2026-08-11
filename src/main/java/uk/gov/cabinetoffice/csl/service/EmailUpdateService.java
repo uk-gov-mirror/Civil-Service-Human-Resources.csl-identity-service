@@ -8,15 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.cabinetoffice.csl.domain.EmailUpdate;
 import uk.gov.cabinetoffice.csl.domain.Identity;
 import uk.gov.cabinetoffice.csl.dto.AgencyToken;
-import uk.gov.cabinetoffice.csl.factory.EmailUpdateFactory;
 import uk.gov.cabinetoffice.csl.exception.ResourceNotFoundException;
+import uk.gov.cabinetoffice.csl.factory.EmailUpdateFactory;
 import uk.gov.cabinetoffice.csl.repository.EmailUpdateRepository;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static java.time.LocalDateTime.now;
 import static java.time.temporal.ChronoUnit.MILLIS;
@@ -61,14 +59,14 @@ public class EmailUpdateService {
     }
 
     public boolean isEmailUpdateExpired(EmailUpdate emailUpdate) {
-        if(emailUpdate.getEmailUpdateStatus().equals(EXPIRED) ||
+        if (emailUpdate.getEmailUpdateStatus().equals(EXPIRED) ||
                 emailUpdate.getEmailUpdateStatus().equals(UPDATED)) {
             return true;
         }
 
-        if(emailUpdate.getEmailUpdateStatus().equals(PENDING)) {
+        if (emailUpdate.getEmailUpdateStatus().equals(PENDING)) {
             long diffInMs = MILLIS.between(emailUpdate.getRequestedAt(), LocalDateTime.now(clock));
-            if(diffInMs >= validityInSeconds * 1000L) {
+            if (diffInMs >= validityInSeconds * 1000L) {
                 emailUpdate.setEmailUpdateStatus(EXPIRED);
                 emailUpdateRepository.save(emailUpdate);
                 return true;
@@ -84,18 +82,18 @@ public class EmailUpdateService {
                 .findByNewEmailIgnoreCaseAndPreviousEmailIgnoreCaseAndEmailUpdateStatus(
                         newEmail, identity.getEmail(), PENDING);
 
-        if(pendingEmailUpdates != null && pendingEmailUpdates.size() > 1) {
+        if (pendingEmailUpdates != null && pendingEmailUpdates.size() > 1) {
             pendingEmailUpdates.forEach(r -> r.setEmailUpdateStatus(EXPIRED));
             emailUpdateRepository.saveAll(pendingEmailUpdates);
         }
 
-        if(pendingEmailUpdates != null && pendingEmailUpdates.size() == 1) {
+        if (pendingEmailUpdates != null && pendingEmailUpdates.size() == 1) {
             emailUpdate = pendingEmailUpdates.get(0);
-            if(isEmailUpdateExpired(emailUpdate)) {
+            if (isEmailUpdateExpired(emailUpdate)) {
                 emailUpdate = emailUpdateFactory.create(identity, newEmail);
             } else {
                 long diffInMs = MILLIS.between(emailUpdate.getRequestedAt(), LocalDateTime.now(clock));
-                if(diffInMs < durationAfterEmailUpdateAllowedInSeconds * 1000L) {
+                if (diffInMs < durationAfterEmailUpdateAllowedInSeconds * 1000L) {
                     return false;
                 } else {
                     emailUpdate.setRequestedAt(now(clock));
@@ -103,15 +101,12 @@ public class EmailUpdateService {
             }
         }
 
-        if(emailUpdate == null) {
+        if (emailUpdate == null) {
             emailUpdate = emailUpdateFactory.create(identity, newEmail);
         }
 
         emailUpdateRepository.save(emailUpdate);
-        String activationUrl = String.format(inviteUrlFormat, emailUpdate.getCode());
-        Map<String, String> personalisation = new HashMap<>();
-        personalisation.put("activationUrl", activationUrl);
-        notifyService.notifyWithPersonalisation(newEmail, updateEmailTemplateId, personalisation);
+        notifyService.notify(newEmail, emailUpdate.getCode(), updateEmailTemplateId, inviteUrlFormat, validityInSeconds);
         return true;
     }
 

@@ -7,7 +7,6 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.cabinetoffice.csl.domain.Reset;
 import uk.gov.cabinetoffice.csl.domain.ResetStatus;
 import uk.gov.cabinetoffice.csl.repository.ResetRepository;
-import uk.gov.service.notify.NotificationClientException;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -20,7 +19,6 @@ import static java.time.Month.FEBRUARY;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static uk.gov.cabinetoffice.csl.domain.ResetStatus.*;
-import static uk.gov.cabinetoffice.csl.domain.ResetStatus.PENDING;
 
 @SpringBootTest
 @ActiveProfiles("no-redis")
@@ -40,7 +38,7 @@ public class ResetServiceTest {
     private final ResetService resetService = new ResetService(resetRepository, notifyService, clock, validityInSeconds);
 
     @Test
-    public void shouldCreateNewPendingReset() throws NotificationClientException {
+    public void shouldCreateNewPendingReset() {
         doNothing().when(notifyService).notify(EMAIL, CODE, TEMPLATE_ID, URL);
 
         resetService.createPendingResetRequestAndAndNotifyUser(EMAIL);
@@ -57,7 +55,7 @@ public class ResetServiceTest {
     }
 
     @Test
-    public void updatePendingResetShouldNotUpdateEmailStatusAndCode() throws NotificationClientException {
+    public void updatePendingResetShouldNotUpdateEmailStatusAndCode() {
         Reset reset = createReset();
 
         doNothing().when(notifyService).notify(reset.getEmail(), reset.getCode(), TEMPLATE_ID, URL);
@@ -76,7 +74,7 @@ public class ResetServiceTest {
     }
 
     @Test
-    public void shouldUpdateStatusOfAllExistingResetsToExpiredAndReturnNull() throws NotificationClientException {
+    public void shouldUpdateStatusOfAllExistingResetsToExpiredAndReturnNull() {
         doNothing().when(notifyService).notify(EMAIL, CODE, TEMPLATE_ID, URL);
 
         Reset reset1 = createReset();
@@ -98,7 +96,7 @@ public class ResetServiceTest {
     }
 
     @Test
-    public void shouldUpdateStatusOfPendingResetToExpiredAndReturnNull() throws NotificationClientException {
+    public void shouldUpdateStatusOfPendingResetToExpiredAndReturnNull() {
         doNothing().when(notifyService).notify(EMAIL, CODE, TEMPLATE_ID, URL);
 
         Reset reset = createReset();
@@ -124,7 +122,7 @@ public class ResetServiceTest {
     }
 
     @Test
-    public void shouldReturnPendingReset() throws NotificationClientException {
+    public void shouldReturnPendingReset() {
         doNothing().when(notifyService).notify(EMAIL, CODE, TEMPLATE_ID, URL);
 
         Reset reset = createReset();
@@ -146,7 +144,7 @@ public class ResetServiceTest {
     }
 
     @Test
-    public void shouldModifyExistingResetWhenResetSuccessFor() throws NotificationClientException {
+    public void shouldModifyExistingResetWhenResetSuccessFor() {
         doNothing().when(notifyService).notify(EMAIL, CODE, TEMPLATE_ID, URL);
 
         Reset expectedReset = createReset();

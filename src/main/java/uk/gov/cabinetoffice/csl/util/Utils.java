@@ -4,10 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.Locale;
 
 @Slf4j
@@ -37,18 +35,6 @@ public class Utils {
             result = result + String.format("%d", seconds) + " seconds";
         }
         return StringUtils.removeEnd(result, " ");
-    }
-
-    public String convertDateTimeFormat(String localDateTime) {
-        try {
-            SimpleDateFormat sourceDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            SimpleDateFormat targetDateFormat = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
-            Date parsedDate = sourceDateFormat.parse(localDateTime);
-            return targetDateFormat.format(parsedDate);
-        } catch (Exception e) {
-            log.warn("Invalid date string value: {}, Exception: {}", localDateTime, e.toString());
-        }
-        return "";
     }
 
     public String convertDateTimeFormat(LocalDateTime localDateTime) {
